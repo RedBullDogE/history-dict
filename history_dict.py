@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-class HistoryDict:
+class HistoryDict(dict):
     """
     Dict with the ability to remember previous overwritten values of specific key.
 
@@ -44,6 +44,36 @@ class HistoryDict:
 
     def __getitem__(self, key):
         return self._storage[key]["newest"][1]
+
+    def __len__(self):
+        return len(self._storage)
+
+    def __delitem__(self, key):
+        del self._storage[key]
+
+    def __contains__(self, key):
+        return key in self._storage
+
+    def clear(self):
+        return self._storage.clear()
+
+    def copy(self):
+        return self._storage.copy()
+
+    def has_key(self, key):
+        return key in self._storage
+
+    def update(self, key):
+        raise NotImplemented
+
+    def keys(self):
+        return self._storage.keys()
+
+    def values(self):
+        return self._storage.values()
+
+    def items(self):
+        return self._storage.items()
 
     def get(self, key):
         item_dict = self._storage.get(key)

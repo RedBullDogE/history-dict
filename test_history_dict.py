@@ -6,12 +6,9 @@ from history_dict import HistoryDict
 
 test_dict = HistoryDict()
 test_data = {
-    "key": {
-        "newest": (datetime(2021, 9, 13, 10), "value-1"),
-        datetime(2021, 9, 13, 12): "value-2",
-    },
-    "another_key": {"newest": (datetime(2021, 9, 13, 10), "value")},
-    "key_to_delete": {"newest": (datetime(2021, 1, 1, 0), "value")},
+    "key": {datetime(2021, 9, 13, 12): "value-2", datetime(2021, 9, 13, 10): "value-1"},
+    "another_key": {datetime(2021, 9, 13, 10): "value"},
+    "key_to_delete": {datetime(2021, 1, 1, 0): "value"},
 }
 test_dict.load_test_data(test_data)
 
@@ -44,9 +41,7 @@ def test_change_newest_key():
 
 def test_pop_existing_key():
     prev_len = len(test_dict)
-    assert test_dict.pop("key_to_delete") == {
-        "newest": (datetime(2021, 1, 1, 0), "value")
-    }
+    assert test_dict.pop("key_to_delete") == {datetime(2021, 1, 1, 0): "value"}
     assert len(test_dict) == prev_len - 1
 
 

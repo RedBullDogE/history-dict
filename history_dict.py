@@ -13,10 +13,10 @@ class HistoryDict(dict):
     General structure of the storage:
         STORAGE = {
             <key>: {
-                'newest': (<timestamp>, <value>),   # the most recent value
-                <timestamp>: <value>,               # old values
+                <timestamp>: <value>,       # the oldest value
                 <timestamp>: <value>,
                 ...
+                <timestamp>: <value>        # the newest value
             },
             <key>: { ... }, ...
         }
@@ -29,24 +29,16 @@ class HistoryDict(dict):
         self._storage.update(test_data)
 
     def __setitem__(self, key, item):
-        now = datetime.now()
-        item_timestamp = datetime(now.year, now.month, now.day, now.hour)
+        item_timestamp = datetime.now()
 
-        if key not in self._storage:
-            self._storage[key] = {"newest": (item_timestamp, item)}
-            return
-
-        if item_timestamp == self._storage[key]["newest"][0]:
-            self._storage[key]["newest"] = (item_timestamp, item)
+        if key in self._storage:
+            self._storage[key][item_timestamp] = item
         else:
-            old_timestamp, old_item = self._storage[key]["newest"]
-            self._storage[key][old_timestamp] = old_item
-            self._storage[key]["newest"] = (item_timestamp, item)
-        
-            
+            self._storage[key] = {item_timestamp: item}
 
     def __getitem__(self, key):
-        return self._storage[key]["newest"][1]
+        item_history = self._storage[key]
+        return item_history[list(item_history)[-1]]
 
     def __len__(self):
         return len(self._storage)
@@ -79,24 +71,23 @@ class HistoryDict(dict):
         return self._storage.items()
 
     def get(self, key):
-        item_dict = self._storage.get(key)
-        
-        if item_dict is None:
+        item_history = self._storage.get(key)
+
+        if item_history is None:
             return
 
-        return item_dict.get("newest")[1]
+        if len(item_history) == 0:
+            return
+
+        return item_history[list(item_history)[-1]]
 
     def get_old(self, key, timestamp):
-        storage_item = self._storage.get(key)
-        
-        if storage_item is None:
+        item_history = self._storage.get(key)
+
+        if item_history is None:
             return
 
-        return (
-            storage_item["newest"][1]
-            if storage_item["newest"][0] == timestamp
-            else storage_item.get(timestamp)
-        )
+        return item_history.get(timestamp)
 
     def pop(self, key):
         return self._storage.pop(key)

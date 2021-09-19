@@ -1,4 +1,5 @@
 from datetime import datetime
+from copy import deepcopy
 
 
 class HistoryDict(dict):
@@ -52,14 +53,16 @@ class HistoryDict(dict):
     def clear(self):
         return self._storage.clear()
 
-    def copy(self):
-        return self._storage.copy()
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            setattr(result, k, deepcopy(v, memo))
+        return result
 
     def has_key(self, key):
         return key in self._storage
-
-    def update(self, key):
-        raise NotImplemented
 
     def keys(self):
         return self._storage.keys()

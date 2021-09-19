@@ -69,10 +69,14 @@ def test_copying():
 
     deep_copy = deepcopy(original_dict)
     shallow_copy = original_dict
-
     deep_copy["key"] = "good-copy"
     shallow_copy["key"] = "bad-copy"
 
-    
     assert deep_copy["key"] is not original_dict["key"]
     assert shallow_copy["key"] is original_dict["key"]
+
+
+def test_set_key():
+    timestamp = test_dict.set_key("test_set_key", "item")
+
+    assert test_dict.get_old("test_set_key", timestamp) == "item"

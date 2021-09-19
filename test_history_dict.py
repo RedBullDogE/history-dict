@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime
 
 import pytest
@@ -60,3 +61,18 @@ def test_pop_old_unexisting_key():
 
 def test_isinstance():
     assert isinstance(test_dict, dict) == True
+
+
+def test_copying():
+    original_dict = HistoryDict()
+    original_dict["key"] = "value"
+
+    deep_copy = deepcopy(original_dict)
+    shallow_copy = original_dict
+
+    deep_copy["key"] = "good-copy"
+    shallow_copy["key"] = "bad-copy"
+
+    
+    assert deep_copy["key"] is not original_dict["key"]
+    assert shallow_copy["key"] is original_dict["key"]

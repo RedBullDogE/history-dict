@@ -8,6 +8,7 @@ black = "*"
 
 [packages]
 pytest = "*"
+freezegun = "*"
 
 [requires]
 python_version = "3.8"

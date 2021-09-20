@@ -26,9 +26,6 @@ class HistoryDict(dict):
     def __init__(self):
         self._storage = dict()
 
-    def load_test_data(self, test_data):
-        self._storage.update(test_data)
-
     def __setitem__(self, key, item):
         item_timestamp = datetime.now()
 
@@ -91,7 +88,7 @@ class HistoryDict(dict):
 
     def get_old(self, key, timestamp):
         """
-        Method for getting item by its timestamp.
+        Method for getting value of specific key actual for specified timestamp.
 
         Returns None if key is not in the storage or timestamp is not found
         for specific item.
@@ -101,7 +98,12 @@ class HistoryDict(dict):
         if item_history is None:
             return
 
-        return item_history.get(timestamp)
+        filtered_timestamps = list(filter(lambda d: d <= timestamp, list(item_history)))
+        
+        if not len(filtered_timestamps):
+            return
+            
+        return item_history.get(max(filtered_timestamps))
 
     def pop(self, key):
         """
@@ -118,26 +120,6 @@ class HistoryDict(dict):
         Throws KeyError if key is not in the storage.
         """
         return self._storage[key].pop(timestamp)
-
-    def get_history(self, key):
-        """
-        Returns history (dict[datetime, any]) for a specific key
-        """
-        return self._storage[key]
-
-    def set_key(self, key, item):
-        """
-        Method for manual setting key-value pair. Does the same as __setitem__
-        magic method, but also returns item timestamp.
-        """
-        item_timestamp = datetime.now()
-
-        if key in self._storage:
-            self._storage[key][item_timestamp] = item
-        else:
-            self._storage[key] = {item_timestamp: item}
-        
-        return item_timestamp
 
     def __str__(self):
         return self._storage.__str__()

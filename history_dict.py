@@ -65,12 +65,15 @@ class HistoryDict(dict):
         return self._storage.keys()
 
     def values(self):
-        return self._storage.values()
+        # TODO: fix method
+        return NotImplemented
 
     def items(self):
-        return self._storage.items()
+        # TODO: fix method
+        return NotImplemented
 
     def get(self, key):
+        # TODO: fix signature - get(key, default=None)
         """
         Method for getting the most recent item.
 
@@ -78,15 +81,10 @@ class HistoryDict(dict):
         """
         item_history = self._storage.get(key)
 
-        if item_history is None:
-            return
-
-        if len(item_history) == 0:
-            return
-
-        return item_history[list(item_history)[-1]]
+        return item_history[list(item_history)[-1]] if item_history else None
 
     def get_old(self, key, timestamp):
+        # TODO: fix signature - get_old(key, default=None)
         """
         Method for getting value of specific key actual for specified timestamp.
 
@@ -99,13 +97,14 @@ class HistoryDict(dict):
             return
 
         filtered_timestamps = list(filter(lambda d: d <= timestamp, list(item_history)))
-        
+
         if not len(filtered_timestamps):
             return
-            
+
         return item_history.get(max(filtered_timestamps))
 
     def pop(self, key):
+        # TODO: fix signature - pop(key, default=None)
         """
         Removes item and its history from the storage and returns them as a result.
 

@@ -1,6 +1,8 @@
 from bisect import bisect
-from datetime import datetime
 from copy import deepcopy
+from datetime import datetime
+
+from utils import KeyWrapper
 
 
 class HistoryDict(dict):
@@ -15,10 +17,10 @@ class HistoryDict(dict):
     General structure of the storage:
         STORAGE = {
             <key>: {
-                <timestamp>: <value>,       # the oldest value
-                <timestamp>: <value>,
+                (<timestamp>, <value>),       # the oldest value
+                (<timestamp>, <value>),
                 ...
-                <timestamp>: <value>        # the newest value
+                (<timestamp>, <value>)        # the newest value
             },
             <key>: { ... }, ...
         }
@@ -31,13 +33,17 @@ class HistoryDict(dict):
         item_timestamp = datetime.now()
 
         if key in self._storage:
-            self._storage[key][item_timestamp] = item
+            self._storage[key].append((item_timestamp, item))
         else:
-            self._storage[key] = {item_timestamp: item}
+            self._storage[key] = [(item_timestamp, item)]
 
     def __getitem__(self, key):
         item_history = self._storage[key]
-        return item_history[list(item_history)[-1]]
+
+        if not item_history:
+            raise KeyError(key)
+
+        return item_history[-1][1]
 
     def __len__(self):
         return len(self._storage)
@@ -71,9 +77,8 @@ class HistoryDict(dict):
 
     def items(self):
         # TODO: fix method
-        print('test')
         raise NotImplementedError
-    
+
     def update(self, iterable):
         raise NotImplementedError
 
@@ -86,7 +91,7 @@ class HistoryDict(dict):
         """
         item_history = self._storage.get(key)
 
-        return item_history[list(item_history)[-1]] if item_history else None
+        return item_history[-1][1] if item_history else None
 
     def get_old(self, key, timestamp):
         # TODO: fix signature - get_old(key, default=None)
@@ -100,24 +105,10 @@ class HistoryDict(dict):
 
         if item_history is None:
             return
-        
-        item_keys = list(item_history)
-        idx = bisect(item_keys, timestamp)
 
-        return item_history.get(item_keys[idx - 1]) if idx else None
+        idx = bisect(KeyWrapper(item_history, lambda el: el[0]), timestamp)
 
-    # def get_old(self, key, timestamp):
-    #     item_history = self._storage.get(key)
-
-    #     if item_history is None:
-    #         return
-
-    #     filtered_timestamps = list(filter(lambda d: d <= timestamp, list(item_history)))
-
-    #     if not len(filtered_timestamps):
-    #         return
-
-    #     return item_history.get(max(filtered_timestamps))
+        return item_history[idx - 1][1] if idx else None
 
     def pop(self, key):
         # TODO: fix signature - pop(key, default=None)
@@ -127,14 +118,6 @@ class HistoryDict(dict):
         Throws KeyError if key is not in the storage.
         """
         return self._storage.pop(key)
-
-    def pop_old(self, key, timestamp):
-        """
-        Removes item historical value from the storage by its timestamp.
-
-        Throws KeyError if key is not in the storage.
-        """
-        return self._storage[key].pop(timestamp)
 
     def __str__(self):
         return self._storage.__str__()

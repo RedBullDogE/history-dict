@@ -67,8 +67,8 @@ def test_pop_existing_key():
     prev_len = len(test_dict)
     popped_value = test_dict.pop("key3")
 
-    assert type(popped_value) == dict
-    assert list(popped_value.values())[0] == "value-4"
+    assert type(popped_value) == list
+    assert popped_value[-1][1] == "value-4"
     assert len(test_dict) == prev_len - 1
 
 

@@ -23,6 +23,7 @@ def test_get_unexisting_key():
         test_dict["fake"]
 
     assert test_dict.get("fake") is None
+    assert test_dict.get("fake", "default") == "default"
 
 
 def test_get_old_existing_key():
@@ -45,7 +46,12 @@ def test_get_old_unexisting_key():
         test_dict["key"] = "value"
 
     assert test_dict.get_old("key", datetime(2021, 1, 1, 8)) is None
+    assert test_dict.get_old("key", datetime(2021, 1, 1, 8), "default") == "default"
     assert test_dict.get_old("unexisting_key", datetime(2021, 9, 13, 9)) is None
+    assert (
+        test_dict.get_old("unexisting_key", datetime(2021, 9, 13, 9), "default")
+        == "default"
+    )
 
 
 def test_change_newest_key():

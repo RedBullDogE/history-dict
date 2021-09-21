@@ -82,36 +82,33 @@ class HistoryDict(dict):
     def update(self, iterable):
         raise NotImplementedError
 
-    def get(self, key):
-        # TODO: fix signature - get(key, default=None)
+    def get(self, key, default=None):
         """
         Method for getting the most recent item.
 
-        Returns None if key is not in the storage.
+        Returns None if key is not in the storage or default value if it is specified.
         """
         item_history = self._storage.get(key)
 
-        return item_history[-1][1] if item_history else None
+        return item_history[-1][1] if item_history else default
 
-    def get_old(self, key, timestamp):
-        # TODO: fix signature - get_old(key, default=None)
+    def get_old(self, key, timestamp, default=None):
         """
         Method for getting value of specific key actual for specified timestamp.
 
         Returns None if key is not in the storage or timestamp is not found
-        for specific item.
+        for specific item. Also method can return given default value in such cases.
         """
         item_history = self._storage.get(key)
 
         if item_history is None:
-            return
+            return default
 
         idx = bisect(KeyWrapper(item_history, lambda el: el[0]), timestamp)
 
-        return item_history[idx - 1][1] if idx else None
+        return item_history[idx - 1][1] if idx else default
 
     def pop(self, key):
-        # TODO: fix signature - pop(key, default=None)
         """
         Removes item and its history from the storage and returns them as a result.
 

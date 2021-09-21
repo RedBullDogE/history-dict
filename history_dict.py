@@ -1,3 +1,4 @@
+from bisect import bisect
 from datetime import datetime
 from copy import deepcopy
 
@@ -66,11 +67,15 @@ class HistoryDict(dict):
 
     def values(self):
         # TODO: fix method
-        return NotImplemented
+        raise NotImplementedError
 
     def items(self):
         # TODO: fix method
-        return NotImplemented
+        print('test')
+        raise NotImplementedError
+    
+    def update(self, iterable):
+        raise NotImplementedError
 
     def get(self, key):
         # TODO: fix signature - get(key, default=None)
@@ -95,13 +100,24 @@ class HistoryDict(dict):
 
         if item_history is None:
             return
+        
+        item_keys = list(item_history)
+        idx = bisect(item_keys, timestamp)
 
-        filtered_timestamps = list(filter(lambda d: d <= timestamp, list(item_history)))
+        return item_history.get(item_keys[idx - 1]) if idx else None
 
-        if not len(filtered_timestamps):
-            return
+    # def get_old(self, key, timestamp):
+    #     item_history = self._storage.get(key)
 
-        return item_history.get(max(filtered_timestamps))
+    #     if item_history is None:
+    #         return
+
+    #     filtered_timestamps = list(filter(lambda d: d <= timestamp, list(item_history)))
+
+    #     if not len(filtered_timestamps):
+    #         return
+
+    #     return item_history.get(max(filtered_timestamps))
 
     def pop(self, key):
         # TODO: fix signature - pop(key, default=None)
